@@ -9,6 +9,11 @@ import rutasCliente from './src/routes/clientes.routes.js';
 import rutasDetallesInsumos from './src/routes/detalles_insumos.routes.js';
 import rutasOrden from './src/routes/orden.routes.js';
 import rutasDetallesOrden from './src/routes/detalles_orden.routes.js';
+import rutasUsuarios from './src/routes/usuarios.routes.js';
+import rutasCategorias from './src/routes/categorias.routes.js';
+import rutasVentas from './src/routes/ventas.routes.js';
+
+
 // Crear la aplicación de Express
 const app = express();
 
@@ -29,6 +34,9 @@ app.use('/api', rutasCliente);
 app.use('/api', rutasDetallesInsumos);
 app.use('/api', rutasOrden);
 app.use('/api', rutasDetallesOrden);
+app.use('/api', rutasUsuarios);
+app.use('/api', rutasCategorias);
+app.use('/api', rutasVentas);
 
 // Manejo de rutas no encontradas
 app.use((req, res, next) => {

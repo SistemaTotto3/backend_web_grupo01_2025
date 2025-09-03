@@ -121,9 +121,8 @@ INSERT INTO Categoria (nombre_categoria) VALUES
 ('Hamburguesas Clásicas'), ('Hamburguesas Especiales'), ('Vegetarianas'),
 ('Bebidas'), ('Acompañamientos'), ('Postres'), ('Combos'), 
 ('Picantes'),  ('Premium'), ('Baratas'), ('Doble carne'),
- ('Ensaladas'), ('Mexicanas'), ('Sin pan'), ('Fitness'), ('Gourmet'),
-('Mini'), ('Grandes'),  ('Económicas'),
- ('Veganas');
+('Ensaladas'), ('Mexicanas'), ('Sin pan'), ('Fitness'), ('Gourmet'),
+('Mini'), ('Grandes'),  ('Económicas'), ('Veganas');
 
 INSERT INTO Producto (id_categoria, nombre_producto, precio_costo, precio_venta, existencia) VALUES
 (1, 'Hamburguesa Clásica', 2.50, 5.00, 3),
