@@ -6,7 +6,7 @@ export const obtenerCategoria = async (req, res) => {
     res.json(result);
   } catch (error) {
     return res.status(500).json({
-      mensaje: "Ha ocurrido un error al leer los Clientes.",
+      mensaje: "Ha ocurrido un error al leer las categorias.",
       error: error,
     });
   }

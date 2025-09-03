@@ -11,7 +11,7 @@ import rutasOrden from './src/routes/orden.routes.js';
 import rutasDetallesOrden from './src/routes/detalles_orden.routes.js';
 import rutasUsuarios from './src/routes/usuarios.routes.js';
 import rutasCategorias from './src/routes/categorias.routes.js';
-import rutasVentas from './src/routes/ventas.routes.js';
+import rutasVentas from './src/routes/Venta.routes.js';
 
 
 // Crear la aplicación de Express
