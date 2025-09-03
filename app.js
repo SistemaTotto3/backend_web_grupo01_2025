@@ -6,6 +6,7 @@ import cors from 'cors';
 import rutasInsumo from './src/routes/insumo.routes.js';
 import rutasProducto from './src/routes/productos.routes.js';
 import rutasCliente from './src/routes/clientes.routes.js';
+import rutasDetallesInsumos from './src/routes/detalles_insumos.routes.js';
 // Crear la aplicación de Express
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use('/api', rutasInsumo);
 app.use('/api', rutasProducto);
 app.use('/api', rutasCliente);
+app.use('/api', rutasDetallesInsumos);
 
 // Manejo de rutas no encontradas
 app.use((req, res, next) => {
