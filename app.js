@@ -3,8 +3,7 @@ import express from 'express';
 import cors from 'cors';
 
 //Importar las rutas
-import rutasCategorias from './scr/routes/categorias.routes.js';
-
+import rutasInsumo from './src/routes/insumo.routes.js';
 // Crear la aplicación de Express
 const app = express();
 
@@ -19,7 +18,7 @@ app.use(express.json({ limit: '10mb' })); //10 MB
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Rutas
-app.use('/api', rutasCategorias);
+app.use('/api', rutasInsumo);
 
 // Manejo de rutas no encontradas
 app.use((req, res, next) => {
