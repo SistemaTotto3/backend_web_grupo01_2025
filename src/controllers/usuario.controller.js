@@ -3,7 +3,7 @@ import { pool } from "../../db_connection.js";
 // Obtener todas las insumos
 export const obtenerUsuarios = async (req, res) => {
   try {
-    const [result] = await pool.query("SELECT * FROM Usuario");
+    const [result] = await pool.query("SELECT * FROM usuario");
     res.json(result);
   } catch (error) {
     return res.status(500).json({
