@@ -3,13 +3,13 @@ import {obtenerProductos, obtenerProducto, registrarProducto} from '../controlle
 
 const router = Router();
 
-// Obtener todas las categorías
+// Obtener todas los Productos
 router.get('/Productos', obtenerProductos);
 
-// Obtener una categoría por su ID
+// Obtener un Producto por su ID
 router.get('/Producto/:id_producto', obtenerProducto);
 
-// Registrar una nueva Categoría
+// Registrar un nuevo Producto
 router.post('/registrarProducto', registrarProducto);
 
 export default router;
