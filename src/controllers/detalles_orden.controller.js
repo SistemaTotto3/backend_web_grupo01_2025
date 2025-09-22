@@ -32,7 +32,7 @@ export const obtenerDetalleOrden = async (req, res) => {
   }
 };
  
-//Crear una nueva orden
+//Crear una nuevo Detalle Orden 
 export const registrarDetalleOrden = async (req, res) => {
   try {
     const {idOrden, id_producto, estado_orden, cantidad} = req.body;
