@@ -1,18 +1,18 @@
 import { pool } from "../../db_connection.js";
-// Obtener todas las categorías
+// Obtener todas los Productos
 export const obtenerProductos = async (req, res) => {
   try {
     const [result] = await pool.query("SELECT * FROM Producto");
     res.json(result);
   } catch (error) {
     return res.status(500).json({
-      mensaje: "Ha ocurrido un error al leer los Categorias.",
+      mensaje: "Ha ocurrido un error al leer los Productos.",
       error: error,
     });
   }
 };
 
-// Obtener una categoría por su ID
+// Obtener un Producto por su ID
 export const obtenerProducto = async (req, res) => {
   try {
     const id_producto = req.params.id_producto;
@@ -26,12 +26,12 @@ export const obtenerProducto = async (req, res) => {
     res.json(result[0]);
   } catch (error) {
     return res.status(500).json({
-      mensaje: "Ha ocurrido un error al leer los datos de las categorias.",
+      mensaje: "Ha ocurrido un error al leer los datos de los Productos.",
     });
   }
 };
 
-// Registrar una nueva Categoría
+// Registrar un nuevo Producto
 export const registrarProducto = async (req, res) => {
   try {
     const { id_categoria, nombre_producto,precio_costo,precio_venta,existencia } = req.body;
@@ -42,7 +42,7 @@ export const registrarProducto = async (req, res) => {
     res.status(201).json({ id_producto: result.insertId });
   } catch (error) {
     return res.status(500).json({
-      mensaje: "Ha ocurrido un error al registrar la categoría.",
+      mensaje: "Ha ocurrido un error al registrar el Producto.",
       error: error,
     });
   }
