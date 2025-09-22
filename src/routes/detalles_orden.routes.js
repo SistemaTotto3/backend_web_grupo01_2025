@@ -1,11 +1,17 @@
 import { Router } from 'express';
 
 
-import {obtenerDetallesOrden} from '../controllers/detalles_orden.controller.js';
+import {obtenerDetallesOrdenes,obtenerDetalleOrden, registrarDetalleOrden} from '../controllers/detalles_orden.controller.js';
 
 const router = Router();
 
-// Obtener todas las categorías
-router.get('/DetallesOrden', obtenerDetallesOrden);
+// Obtener todos los Detalle Orden
+router.get('/DetallesOrdenes', obtenerDetallesOrdenes);
+
+//Ruta para obtener un Detalle Orden por su ID
+router.get('/DetalleOrden/:id_detalle_orden', obtenerDetalleOrden);
+
+// Ruta para crear un nuevo Detalle Orden
+router.post('/registrarDetalleOrden', registrarDetalleOrden);
 
 export default router;
