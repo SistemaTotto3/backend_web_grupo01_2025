@@ -14,4 +14,5 @@ router.get('/DetalleOrden/:id_detalle_orden', obtenerDetalleOrden);
 // Ruta para crear un nuevo Detalle Orden
 router.post('/registrarDetalleOrden', registrarDetalleOrden);
 
+
 export default router;
