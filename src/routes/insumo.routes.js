@@ -16,5 +16,4 @@ router.post('/registrarinsumo', registrarInsumo);
 router.delete('/eliminarinsumo/:id_insumo', eliminarInsumo);
 
 
-
 export default router; // Exportar el router para usarlo en app.js
