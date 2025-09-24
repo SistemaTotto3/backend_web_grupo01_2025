@@ -15,7 +15,7 @@ export const obtenerVentas = async (req, res) => {
 
 // Obtener un venta por su ID
 export const obtenerVenta = async (req, res) => {
-   try {
+  try {
     const id_venta = req.params.id_venta;
     const [result] = await pool.query("SELECT * FROM venta WHERE id_venta= ?",[id_venta]
     );
@@ -31,7 +31,7 @@ export const obtenerVenta = async (req, res) => {
     });
   }
 };
- 
+
 //Crear una nueva venta
 export const registrarVenta = async (req, res) => {
   try {

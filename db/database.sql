@@ -9,73 +9,93 @@ CREATE TABLE Usuario (
 );
 
 CREATE TABLE Insumo (
-id_insumo INT AUTO_INCREMENT PRIMARY KEY,
-fecha_insumo DATETIME,
-total_insumo FLOAT
+    id_insumo INT AUTO_INCREMENT PRIMARY KEY,
+    fecha_insumo DATETIME,
+    total_insumo FLOAT
 );
 
-
 CREATE TABLE Detalle_Insumo (
-id_detalle_insumo INT AUTO_INCREMENT PRIMARY KEY,
-id_insumo INT,
-id_producto INT,
-nombre_insumo VARCHAR(50),
-cantidad_insumo float, 
-precio_insumo Float
+    id_detalle_insumo INT AUTO_INCREMENT PRIMARY KEY,
+    id_insumo INT,
+    id_producto INT,
+    nombre_insumo VARCHAR(50),
+    cantidad_insumo FLOAT, 
+    precio_insumo FLOAT
 );
 
 CREATE TABLE Cliente (
-idCliente INT AUTO_INCREMENT PRIMARY KEY,
-nombre_1 VARCHAR(50),
-apellido_1 VARCHAR(50),
-direccion_cliente VARCHAR(50),
-telefono_cliente VARCHAR(15)
+    idCliente INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_1 VARCHAR(50),
+    apellido_1 VARCHAR(50),
+    direccion_cliente VARCHAR(50),
+    telefono_cliente VARCHAR(15)
 );
 
 CREATE TABLE Categoria (
-id_categoria INT AUTO_INCREMENT PRIMARY KEY,
-nombre_categoria VARCHAR(50)
+    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_categoria VARCHAR(50)
 );
 
 CREATE TABLE Producto (
-id_producto INT AUTO_INCREMENT PRIMARY KEY,
-id_categoria INT,
-nombre_producto VARCHAR(50),
-precio_costo FLOAT,
-precio_venta FLOAT,
-existencia INT
+    id_producto INT AUTO_INCREMENT PRIMARY KEY,
+    id_categoria INT,
+    nombre_producto VARCHAR(50),
+    precio_costo FLOAT,
+    precio_venta FLOAT,
+    existencia INT
 );
 
-
 CREATE TABLE Orden (
-idOrden INT AUTO_INCREMENT PRIMARY KEY,
-id_venta INT,
-fecha_orden DATETIME
+    idOrden INT AUTO_INCREMENT PRIMARY KEY,
+    id_venta INT,
+    fecha_orden DATETIME
 );
 
 CREATE TABLE Detalle_Orden (
-id_detalle_orden INT AUTO_INCREMENT PRIMARY KEY,
-idOrden INT,
-id_producto INT,
-estado_orden VARCHAR(50),
-cantidad INT
+    id_detalle_orden INT AUTO_INCREMENT PRIMARY KEY,
+    idOrden INT,
+    id_producto INT,
+    estado_orden VARCHAR(50),
+    cantidad INT
 );
 
 CREATE TABLE Venta (
-id_venta INT AUTO_INCREMENT PRIMARY KEY,
-idCliente INT,
-fecha_venta DATETIME,
-total_venta FLOAT,
-estado_venta VARCHAR (15)
+    id_venta INT AUTO_INCREMENT PRIMARY KEY,
+    idCliente INT,
+    fecha_venta DATETIME,
+    total_venta FLOAT,
+    estado_venta VARCHAR (15)
 );
 
-ALTER TABLE Detalle_Insumo ADD CONSTRAINT FK_detalle_insumo_Insumo FOREIGN KEY (id_insumo) REFERENCES Insumo (id_insumo);
-ALTER TABLE Detalle_Insumo ADD CONSTRAINT FK_detalle_insumo_Producto FOREIGN KEY (id_producto) REFERENCES Producto (id_producto);
-ALTER TABLE Detalle_orden ADD CONSTRAINT FK_detalle_orden_Producto FOREIGN KEY (id_producto) REFERENCES Producto (id_producto);
-ALTER TABLE Detalle_orden ADD CONSTRAINT FK_detalle_orden_Orden FOREIGN KEY (idOrden) REFERENCES Orden (idOrden);
-ALTER TABLE Venta ADD CONSTRAINT FK_venta_Cliente FOREIGN KEY (idCliente) REFERENCES Cliente (idCliente);
-ALTER TABLE Orden ADD CONSTRAINT FK_orden_venta  FOREIGN KEY (id_venta) REFERENCES venta (id_venta);
-ALTER TABLE Producto ADD CONSTRAINT FK_producto_categoria FOREIGN KEY (id_categoria) REFERENCES Categoria (id_categoria);
+-- Relaciones (solo ON DELETE CASCADE en los detalles)
+ALTER TABLE Detalle_Insumo 
+    ADD CONSTRAINT FK_detalle_insumo_Insumo 
+    FOREIGN KEY (id_insumo) REFERENCES Insumo (id_insumo) ON DELETE CASCADE;
+
+ALTER TABLE Detalle_Insumo 
+    ADD CONSTRAINT FK_detalle_insumo_Producto 
+    FOREIGN KEY (id_producto) REFERENCES Producto (id_producto);
+
+ALTER TABLE Detalle_Orden 
+    ADD CONSTRAINT FK_detalle_orden_Producto 
+    FOREIGN KEY (id_producto) REFERENCES Producto (id_producto);
+
+ALTER TABLE Detalle_Orden 
+    ADD CONSTRAINT FK_detalle_orden_Orden 
+    FOREIGN KEY (idOrden) REFERENCES Orden (idOrden) ON DELETE CASCADE;
+
+ALTER TABLE Venta 
+    ADD CONSTRAINT FK_venta_Cliente 
+    FOREIGN KEY (idCliente) REFERENCES Cliente (idCliente);
+
+ALTER TABLE Orden 
+    ADD CONSTRAINT FK_orden_venta  
+    FOREIGN KEY (id_venta) REFERENCES Venta (id_venta);
+
+ALTER TABLE Producto 
+    ADD CONSTRAINT FK_producto_categoria 
+    FOREIGN KEY (id_categoria) REFERENCES Categoria (id_categoria);
+
 
 
 INSERT INTO Usuario (nombre_usuario, contraseña_hash, rol) VALUES
