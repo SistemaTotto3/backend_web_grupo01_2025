@@ -50,3 +50,27 @@ export const registrarCliente = async (req, res) => {
   }
 };
 
+export const eliminarCliente = async (req, res) => {
+  try {
+    const idCliente = req.params.idCliente;
+    const [result] = await pool.query(
+      'DELETE FROM Cliente WHERE idCliente = ?',
+      [idCliente]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        mensaje: `Error al eliminar la Cliente. El ID ${idCliente} no fue encontrado.`
+      });
+    }
+
+    // Respuesta sin contenido para indicar éxito
+    res.status(204).send();
+  } catch (error) {
+    return res.status(500).json({
+      mensaje: 'Ha ocurrido un error al eliminar la Cliente.',
+      error: error
+    });
+  }
+};
+
