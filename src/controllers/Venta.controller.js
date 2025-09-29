@@ -71,3 +71,31 @@ export const eliminarVenta = async (req, res) => {
     });
   }
 };
+
+// Actualizar una Venta
+export const actualizarVenta = async (req, res) => {
+  try {
+    const id_venta = req.params.id_venta;
+    const { idCliente, fecha_venta, total_venta, estado_venta } = req.body;
+
+    const [result] = await pool.query(
+      'UPDATE venta SET idCliente = ?, fecha_venta = ?, total_venta = ?, estado_venta = ? WHERE id_venta = ?',
+      [idCliente, fecha_venta, total_venta, estado_venta, id_venta]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        mensaje:' Error al actualizar. ID ${id_venta} no encontrada.'
+      });
+    }
+
+    res.json({
+      mensaje: 'Venta con ID ${id_venta} actualizada correctamente.'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      mensaje: 'Ha ocurrido un error al actualizar la venta.',
+      error: error
+    });
+  }
+};

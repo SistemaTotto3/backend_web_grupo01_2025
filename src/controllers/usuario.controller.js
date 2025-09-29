@@ -71,3 +71,31 @@ export const eliminarUsuario = async (req, res) => {
     });
   }
 };
+
+// Actualizar un Usuario
+export const actualizarUsuario = async (req, res) => {
+  try {
+    const id_usuario = req.params.id_usuario;
+    const { nombre_usuario, contraseña_hash, rol } = req.body;
+
+    const [result] = await pool.query(
+      'UPDATE usuario SET nombre_usuario = ?, contraseña_hash = ?, rol = ? WHERE id_usuario = ?',
+      [nombre_usuario, contraseña_hash, rol, id_usuario]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        mensaje:' Error al actualizar. ID ${id_usuario} no encontrado.'
+      });
+    }
+
+    res.json({
+      mensaje: 'Usuario con ID ${id_usuario} actualizado correctamente.'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      mensaje: 'Ha ocurrido un error al actualizar el usuario.',
+      error: error
+    });
+  }
+};
