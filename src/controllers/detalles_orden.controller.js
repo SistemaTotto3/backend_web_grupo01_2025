@@ -52,3 +52,28 @@ export const registrarDetalleOrden = async (req, res) => {
     });
   }
 };
+
+// ELIMINAR UN DETALLE ORDEN 
+export const eliminarDetalleOrden = async (req, res) => {
+  try {
+    const id_detalle_orden = req.params.id_detalle_orden;
+    const [result] = await pool.query(
+      'DELETE FROM Detalle_Orden WHERE id_detalle_orden = ?',
+      [id_detalle_orden]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        mensaje: `Error al eliminar el Detalle_Orden. El ID ${id_detalle_orden} no fue encontrado.`
+      });
+    }
+
+    // Respuesta sin contenido para indicar éxito
+    res.status(204).send();
+  } catch (error) {
+    return res.status(500).json({
+      mensaje: 'Ha ocurrido un error al eliminar el Detalle_Orden.',
+      error: error
+    });
+  }
+};

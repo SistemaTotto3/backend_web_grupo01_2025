@@ -51,3 +51,28 @@ export const registrarOrden = async (req, res) => {
     });
   }
 };
+
+
+export const eliminarOrden = async (req, res) => {
+  try {
+    const idOrden = req.params.idOrden;
+    const [result] = await pool.query(
+      'DELETE FROM Orden WHERE idOrden = ?',
+      [idOrden]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        mensaje: `Error al eliminar la Orden. El ID ${idOrden} no fue encontrado.`
+      });
+    }
+
+    // Respuesta sin contenido para indicar éxito
+    res.status(204).send();
+  } catch (error) {
+    return res.status(500).json({
+      mensaje: 'Ha ocurrido un error al eliminar la Orden.',
+      error: error
+    });
+  }
+};

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {obtenerOrdenes, obtenerOrden, registrarOrden} from '../controllers/orden.controller.js';
+import {obtenerOrdenes, obtenerOrden, registrarOrden, eliminarOrden} from '../controllers/orden.controller.js';
 
 const router = Router();
 
@@ -12,5 +12,7 @@ router.get('/Orden/:idOrden', obtenerOrden);
 // Ruta para crear una nueva Orden
 router.post('/registrarOrden', registrarOrden);
 
+// Ruta para eliminar una orden 
+router.delete('/eliminarOrden/:idOrden', eliminarOrden);
 
 export default router;
