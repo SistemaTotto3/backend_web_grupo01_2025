@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import  {obtenerInsumos, obtenerInsumo, registrarInsumo, eliminarInsumo}  from '../controllers/insumo.controller.js';
+import  {obtenerInsumos, obtenerInsumo, registrarInsumo, eliminarInsumo, actualizarInsumo}  from '../controllers/insumo.controller.js';
 const router = Router();
 
 // Ruta para obtener todos los insumos
@@ -15,5 +15,7 @@ router.post('/registrarinsumo', registrarInsumo);
 //ruta para eliminar un insumo por su ID
 router.delete('/eliminarinsumo/:id_insumo', eliminarInsumo);
 
+//ruta para actualizar un insumo
+router.patch('/actualizarinsumo/:id_insumo', actualizarInsumo);
 
 export default router; // Exportar el router para usarlo en app.js

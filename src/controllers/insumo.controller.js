@@ -71,3 +71,31 @@ export const eliminarInsumo = async (req, res) => {
     });
   }
 };
+
+// Actualizar un Insumo
+export const actualizarInsumo = async (req, res) => {
+  try {
+    const id_insumo = req.params.id_insumo;
+    const { fecha_insumo, total_insumo } = req.body;
+
+    const [result] = await pool.query(
+      'UPDATE insumo SET fecha_insumo =?, total_insumo =? WHERE id_insumo = ?',
+      [ fecha_insumo, total_insumo,id_insumo ]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        mensaje:' Error al actualizar. ID ${id_insumo} no encontrado.'
+      });
+    }
+
+    res.json({
+      mensaje: 'Insumo con ID ${id_insumo} actualizado correctamente.'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      mensaje: 'Ha ocurrido un error al actualizar la Insumo.',
+      error: error
+    });
+  }
+};
