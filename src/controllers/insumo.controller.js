@@ -14,7 +14,7 @@ export const obtenerInsumos = async (req, res) => {
 };
 // Obtener un insumo por su ID
 export const obtenerInsumo = async (req, res) => {
-   try {
+  try {
     const id_insumo = req.params.id_insumo;
     const [result] = await pool.query("SELECT * FROM insumo WHERE id_insumo= ?",[id_insumo]
     );
@@ -30,7 +30,7 @@ export const obtenerInsumo = async (req, res) => {
     });
   }
 };
- 
+
 //Crear un nuevo insumo
 export const registrarInsumo = async (req, res) => {
   try {

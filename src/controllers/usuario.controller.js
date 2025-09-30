@@ -15,7 +15,7 @@ export const obtenerUsuarios = async (req, res) => {
 
 // Obtener un usuario por su ID
 export const obtenerUsuario = async (req, res) => {
-   try {
+  try {
     const id_usuario = req.params.id_usuario;
     const [result] = await pool.query("SELECT * FROM usuario WHERE id_usuario= ?",[id_usuario]
     );
@@ -31,7 +31,7 @@ export const obtenerUsuario = async (req, res) => {
     });
   }
 };
- 
+
 //Crear un nuevo usuarios
 export const registrarUsuario = async (req, res) => {
   try {
