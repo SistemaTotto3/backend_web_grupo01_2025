@@ -73,14 +73,14 @@ export const eliminarInsumo = async (req, res) => {
 };
 
 // Actualizar un Insumo
-export const actualizarInsumo = async (req, res) => {
+export const actualizarInsumoPatch = async (req, res) => {
   try {
-    const id_insumo = req.params.id_insumo;
-    const { fecha_insumo, total_insumo } = req.body;
+    const {id_insumo} = req.params;
+    const datos = req.body;
 
     const [result] = await pool.query(
-      'UPDATE insumo SET fecha_insumo =?, total_insumo =? WHERE id_insumo = ?',
-      [ fecha_insumo, total_insumo,id_insumo ]
+      'UPDATE insumo SET ? WHERE id_insumo = ?',
+      [ datos, id_insumo ]
     );
 
     if (result.affectedRows === 0) {
@@ -89,7 +89,7 @@ export const actualizarInsumo = async (req, res) => {
       });
     }
 
-    res.json({
+    res.status(200).json({
       mensaje: 'Insumo con ID ${id_insumo} actualizado correctamente.'
     });
   } catch (error) {

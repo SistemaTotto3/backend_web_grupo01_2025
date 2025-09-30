@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import  {obtenerDetalles_Insumos, obtenerDetalle_Insumo, registrarDetalle_Insumo, eliminarDetalle_Insumo, actualizarDetalle_Insumo}  from '../controllers/Detalles_insumos.controller.js';
+import  {obtenerDetalles_Insumos, obtenerDetalle_Insumo, registrarDetalle_Insumo, eliminarDetalle_Insumo, actualizarDetalle_InsumoPatch}  from '../controllers/Detalles_insumos.controller.js';
 const router = Router();
 
 // Ruta para obtener todas las categorías
@@ -16,6 +16,6 @@ router.post('/registrardetalle_Insumo', registrarDetalle_Insumo);
 router.delete('/eliminardetalleinsumo/:id_detalle_insumo', eliminarDetalle_Insumo);
 
 //Ruta para actualizar el detalle_insumo
-router.patch('/actualizardetalle_insumo/:id_detalle_insumo',actualizarDetalle_Insumo)
+router.patch('/actualizarDetalle_InsumoPatch/:id_detalle_insumo',actualizarDetalle_InsumoPatch)
 
 export default router; // Exportar el router para usarlo en app.js
