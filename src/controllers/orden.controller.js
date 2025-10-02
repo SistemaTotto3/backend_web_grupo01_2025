@@ -15,7 +15,7 @@ export const obtenerOrdenes = async (req, res) => {
 
 // Obtener una orden por su ID
 export const obtenerOrden = async (req, res) => {
-   try {
+  try {
     const idOrden = req.params.idOrden;
     const [result] = await pool.query("SELECT * FROM Orden WHERE idOrden= ?",[idOrden]
     );

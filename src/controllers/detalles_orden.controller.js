@@ -15,7 +15,7 @@ export const obtenerDetallesOrdenes = async (req, res) => {
 
 // Obtener una orden por su ID
 export const obtenerDetalleOrden = async (req, res) => {
-   try {
+  try {
     const id_detalle_orden = req.params.id_detalle_orden;
     const [result] = await pool.query("SELECT * FROM Orden WHERE id_detalle_orden= ?",[id_detalle_orden]
     );
@@ -31,7 +31,7 @@ export const obtenerDetalleOrden = async (req, res) => {
     });
   }
 };
- 
+
 //Crear una nuevo Detalle Orden 
 export const registrarDetalleOrden = async (req, res) => {
   try {

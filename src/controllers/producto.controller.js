@@ -59,7 +59,7 @@ export const eliminarProducto = async (req, res) => {
 
     if (result.affectedRows === 0) {
       return res.status(404).json({
-        mensaje: `Error al eliminar la categoría. El ID ${id_producto} no fue encontrado.`
+        mensaje: `Error al eliminar el producto. El ID ${id_producto} no fue encontrado.`
       });
     }
 
@@ -67,7 +67,7 @@ export const eliminarProducto = async (req, res) => {
     res.status(204).send();
   } catch (error) {
     return res.status(500).json({
-      mensaje: 'Ha ocurrido un error al eliminar la categoría.',
+      mensaje: 'Ha ocurrido un error al eliminar el producto.',
       error: error
     });
   }
@@ -85,16 +85,16 @@ export const actualizarProducto = async (req, res) => {
 
     if (result.affectedRows === 0) {
       return res.status(404).json({
-        mensaje: `Categoría con ID ${id_producto} no encontrada.`,
+        mensaje: `Producto con ID ${id_producto} no encontrado.`,
       });
     }
 
     res.status(200).json({
-      mensaje: `Categoría con ID ${id_producto} actualizada.`,
+      mensaje: `Producto con ID ${id_producto} actualizado.`,
     });
   } catch (error) {
     res.status(500).json({
-      mensaje: "Error al actualizar la categoría.",
+      mensaje: "Error al actualizar el Producto.",
       error,
     });
   }

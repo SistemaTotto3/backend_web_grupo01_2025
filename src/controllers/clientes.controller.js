@@ -14,7 +14,7 @@ export const obtenerCliente = async (req, res) => {
 
 // Obtener una cliente por su ID
 export const obtenerClientes = async (req, res) => {
-   try {
+  try {
     const idCliente = req.params.idCliente;
     const [result] = await pool.query("SELECT * FROM Cliente WHERE idCliente= ?",[idCliente]
     );

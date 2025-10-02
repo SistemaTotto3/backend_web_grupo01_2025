@@ -26,7 +26,7 @@ export const obtenerInsumo = async (req, res) => {
     res.json(result[0]);
   } catch (error) {
     return res.status(500).json({
-      mensaje: "Ha ocurrido un error al leer los datos de las categorias.",
+      mensaje: "Ha ocurrido un error al leer los datos de Insumo.",
     });
   }
 };
