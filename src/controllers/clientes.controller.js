@@ -74,3 +74,31 @@ export const eliminarCliente = async (req, res) => {
   }
 };
 
+// Actualizar un Cliente
+export const actualizarCliente = async (req, res) => {
+  try {
+    const { idCliente } = req.params;
+    const datos = req.body;
+
+    const [result] = await pool.query(
+      "UPDATE Cliente SET ? WHERE idCliente = ?",
+      [datos, idCliente]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        mensaje: `cliente con ID ${idCliente} no encontrada.`,
+      });
+    }
+
+    res.status(200).json({
+      mensaje: `cliente con ID ${idCliente} actualizada.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      mensaje: "Error al actualizar la cliente.",
+      error,
+    });
+  }
+};
+
