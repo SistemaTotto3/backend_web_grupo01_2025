@@ -100,7 +100,7 @@ ALTER TABLE Producto
 
 INSERT INTO Usuario (nombre_usuario, contraseña_hash, rol) VALUES
 ('admin1', 'admin23', 'Administrador'),
-('cliente1', 'clien23', 'Cliente');
+('vendedor1', 'vend23', 'Vendedor');
 
 
 INSERT INTO Insumo (fecha_insumo, total_insumo) VALUES
@@ -170,26 +170,26 @@ INSERT INTO Producto (id_categoria, nombre_producto, precio_costo, precio_venta,
 
 
 INSERT INTO Venta (idCliente, fecha_venta, total_venta, estado_venta) VALUES
-(1,'2025-01-01 11:10:00',200,'Pagada'),
-(2,'2025-01-02 12:00:00',300,'Pagada'),
+(1,'2025-01-01 11:10:00',200,'Cancelado'),
+(2,'2025-01-02 12:00:00',300,'Pagado'),
 (3,'2025-01-03 13:30:00',150,'Pendiente'),
-(4,'2025-01-04 09:45:00',400,'Pagada'),
-(5,'2025-01-05 10:15:00',250,'Anulada'),
-(6,'2025-01-06 15:00:00',180,'Pagada'),
+(4,'2025-01-04 09:45:00',400,'Pagado'),
+(5,'2025-01-05 10:15:00',250,'Cancelado'),
+(6,'2025-01-06 15:00:00',180,'Pagado'),
 (7,'2025-01-07 16:20:00',500,'Pendiente'),
-(8,'2025-01-08 14:05:00',350,'Pagada'),
-(9,'2025-01-09 19:15:00',220,'Pagada'),
-(10,'2025-01-10 20:00:00',600,'Pagada'),
+(8,'2025-01-08 14:05:00',350,'Pagado'),
+(9,'2025-01-09 19:15:00',220,'Pagado'),
+(10,'2025-01-10 20:00:00',600,'Pagado'),
 (11,'2025-01-11 09:40:00',120,'Pendiente'),
-(12,'2025-01-12 13:20:00',320,'Pagada'),
-(13,'2025-01-13 12:10:00',280,'Pagada'),
-(14,'2025-01-14 18:30:00',450,'Anulada'),
-(15,'2025-01-15 11:55:00',370,'Pagada'),
-(16,'2025-01-16 10:35:00',200,'Pagada'),
+(12,'2025-01-12 13:20:00',320,'Pagado'),
+(13,'2025-01-13 12:10:00',280,'Pagado'),
+(14,'2025-01-14 18:30:00',450,'Cancelado'),
+(15,'2025-01-15 11:55:00',370,'Pagado'),
+(16,'2025-01-16 10:35:00',200,'Pagado'),
 (17,'2025-01-17 09:25:00',340,'Pendiente'),
-(18,'2025-01-18 15:40:00',410,'Pagada'),
-(19,'2025-01-19 13:15:00',150,'Pagada'),
-(20,'2025-01-20 17:50:00',500,'Pagada');
+(18,'2025-01-18 15:40:00',410,'Pagado'),
+(19,'2025-01-19 13:15:00',150,'Pagado'),
+(20,'2025-01-20 17:50:00',500,'Pagado');
 
 
 
@@ -993,6 +993,9 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('producto', 'INSERT', USER());
 END$$
+INSERT INTO Producto (id_categoria, nombre_producto, precio_costo, precio_venta, existencia) VALUES
+(2, 'Hamburguesass Clásica', 2.50, 5.00, 3);
+
 
 
 DELIMITER $$
@@ -1003,6 +1006,14 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('producto', 'UPDATE', USER());
 END$$
+UPDATE producto SET 
+id_categoria = '2',
+nombre_producto = 'Hamburguesas',
+precio_costo = '2.90',
+precio_venta = '7.00',
+existencia = '5'
+WHERE id_producto = 22;
+
 
 
 DELIMITER $$
@@ -1013,11 +1024,8 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('producto', 'DELETE', USER());
 END$$
-
-
-SELECT * FROM bitacora_general;
-
 DELIMITER ;
+DELETE FROM producto WHERE id_producto = 22;
 
 -- =====================================
 -- Triggers para tabla Orden
