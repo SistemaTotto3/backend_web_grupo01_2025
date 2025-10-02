@@ -50,6 +50,7 @@ export const registrarCliente = async (req, res) => {
   }
 };
 
+// Eliminar un Cliente
 export const eliminarCliente = async (req, res) => {
   try {
     const idCliente = req.params.idCliente;
