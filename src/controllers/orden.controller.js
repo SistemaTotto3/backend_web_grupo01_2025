@@ -52,7 +52,7 @@ export const registrarOrden = async (req, res) => {
   }
 };
 
-
+// ELIMINAR UNA ORDEN
 export const eliminarOrden = async (req, res) => {
   try {
     const idOrden = req.params.idOrden;
@@ -73,6 +73,34 @@ export const eliminarOrden = async (req, res) => {
     return res.status(500).json({
       mensaje: 'Ha ocurrido un error al eliminar la Orden.',
       error: error
+    });
+  }
+};
+
+ // ACTUALIZAR UNA ORDEN 
+export const actualizarOrden = async (req, res) => {
+  try {
+    const { idOrden } = req.params;
+    const datos = req.body;
+
+    const [result] = await pool.query(
+      "UPDATE Orden SET ? WHERE idOrden = ?",
+      [datos, idOrden]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        mensaje: `orden con ID ${idOrden} no encontrada.`,
+      });
+    }
+
+    res.status(200).json({
+      mensaje: `orden con ID ${idOrden} actualizada.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      mensaje: "Error al actualizar la orden.",
+      error,
     });
   }
 };

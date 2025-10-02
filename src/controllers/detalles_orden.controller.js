@@ -77,3 +77,31 @@ export const eliminarDetalleOrden = async (req, res) => {
     });
   }
 };
+
+ // ACTUALIZAR UN DETALLE ORDEN 
+export const actualizarDetalleOrden = async (req, res) => {
+  try {
+    const { id_detalle_orden } = req.params;
+    const datos = req.body;
+
+    const [result] = await pool.query(
+      "UPDATE Detalle_Orden SET ? WHERE id_detalle_orden = ?",
+      [datos, id_detalle_orden]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        mensaje: `Detalle Orden con ID ${id_detalle_orden} no encontrada.`,
+      });
+    }
+
+    res.status(200).json({
+      mensaje: `Detalle Orden con ID ${id_detalle_orden} actualizada.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      mensaje: "Error al actualizar la orden.",
+      error,
+    });
+  }
+};

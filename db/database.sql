@@ -4,67 +4,69 @@ USE SistemaTotto;
 CREATE TABLE Usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nombre_usuario VARCHAR(50) UNIQUE,
-    contraseña_hash VARCHAR(255),
-    rol ENUM('Administrador','Cliente') NOT NULL
+    contraseña_hash VARCHAR(20),
+    rol ENUM('Administrador','Vendedor') NOT NULL
 );
 
 CREATE TABLE Insumo (
-    id_insumo INT AUTO_INCREMENT PRIMARY KEY,
-    fecha_insumo DATETIME,
-    total_insumo FLOAT
+id_insumo INT AUTO_INCREMENT PRIMARY KEY,
+fecha_insumo DATETIME,
+total_insumo FLOAT
 );
 
+
 CREATE TABLE Detalle_Insumo (
-    id_detalle_insumo INT AUTO_INCREMENT PRIMARY KEY,
-    id_insumo INT,
-    id_producto INT,
-    nombre_insumo VARCHAR(50),
-    cantidad_insumo FLOAT, 
-    precio_insumo FLOAT
+id_detalle_insumo INT AUTO_INCREMENT PRIMARY KEY,
+id_insumo INT,
+id_producto INT,
+nombre_insumo VARCHAR(100),
+cantidad_insumo float, 
+precio_insumo Float
 );
 
 CREATE TABLE Cliente (
-    idCliente INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_1 VARCHAR(50),
-    apellido_1 VARCHAR(50),
-    direccion_cliente VARCHAR(50),
-    telefono_cliente VARCHAR(15)
+idCliente INT AUTO_INCREMENT PRIMARY KEY,
+nombre_1 VARCHAR(50),
+apellido_1 VARCHAR(50),
+direccion_cliente VARCHAR(75),
+telefono_cliente VARCHAR(15)
 );
 
 CREATE TABLE Categoria (
-    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_categoria VARCHAR(50)
+id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+nombre_categoria VARCHAR(50)
 );
 
 CREATE TABLE Producto (
-    id_producto INT AUTO_INCREMENT PRIMARY KEY,
-    id_categoria INT,
-    nombre_producto VARCHAR(50),
-    precio_costo FLOAT,
-    precio_venta FLOAT,
-    existencia INT
+id_producto INT AUTO_INCREMENT PRIMARY KEY,
+id_categoria INT,
+nombre_producto VARCHAR(50),
+precio_costo FLOAT,
+precio_venta FLOAT,
+existencia INT
 );
 
+
 CREATE TABLE Orden (
-    idOrden INT AUTO_INCREMENT PRIMARY KEY,
-    id_venta INT,
-    fecha_orden DATETIME
+idOrden INT AUTO_INCREMENT PRIMARY KEY,
+id_venta INT,
+fecha_orden DATETIME
 );
 
 CREATE TABLE Detalle_Orden (
-    id_detalle_orden INT AUTO_INCREMENT PRIMARY KEY,
-    idOrden INT,
-    id_producto INT,
-    estado_orden VARCHAR(50),
-    cantidad INT
+id_detalle_orden INT AUTO_INCREMENT PRIMARY KEY,
+idOrden INT,
+id_producto INT,
+estado_orden VARCHAR(50),
+cantidad INT
 );
 
 CREATE TABLE Venta (
-    id_venta INT AUTO_INCREMENT PRIMARY KEY,
-    idCliente INT,
-    fecha_venta DATETIME,
-    total_venta FLOAT,
-    estado_venta VARCHAR (15)
+id_venta INT AUTO_INCREMENT PRIMARY KEY,
+idCliente INT,
+fecha_venta DATETIME,
+total_venta FLOAT,
+estado_venta ENUM('Pendiente','Pagado','Cancelado') NOT NULL
 );
 
 -- Relaciones (solo ON DELETE CASCADE en los detalles)
@@ -95,8 +97,6 @@ ALTER TABLE Orden
 ALTER TABLE Producto 
     ADD CONSTRAINT FK_producto_categoria 
     FOREIGN KEY (id_categoria) REFERENCES Categoria (id_categoria);
-
-
 
 INSERT INTO Usuario (nombre_usuario, contraseña_hash, rol) VALUES
 ('admin1', 'admin23', 'Administrador'),
@@ -141,8 +141,9 @@ INSERT INTO Categoria (nombre_categoria) VALUES
 ('Hamburguesas Clásicas'), ('Hamburguesas Especiales'), ('Vegetarianas'),
 ('Bebidas'), ('Acompañamientos'), ('Postres'), ('Combos'), 
 ('Picantes'),  ('Premium'), ('Baratas'), ('Doble carne'),
-('Ensaladas'), ('Mexicanas'), ('Sin pan'), ('Fitness'), ('Gourmet'),
-('Mini'), ('Grandes'),  ('Económicas'), ('Veganas');
+ ('Ensaladas'), ('Mexicanas'), ('Sin pan'), ('Fitness'), ('Gourmet'),
+('Mini'), ('Grandes'),  ('Económicas'),
+ ('Veganas');
 
 INSERT INTO Producto (id_categoria, nombre_producto, precio_costo, precio_venta, existencia) VALUES
 (1, 'Hamburguesa Clásica', 2.50, 5.00, 3),
@@ -259,8 +260,6 @@ INSERT INTO Detalle_Insumo (id_insumo, id_producto, nombre_insumo, cantidad_insu
 (18, 10, 'Salsa picante', 10.30, 1.30),
 (19, 11, 'Aros de cebolla', 5.10, 1.30),
 (20, 11, 'Guacamole', 5.15, 1.30);
-
-USE SistemaTotto;
 
 -- VISTAS (CREATE REPLACE)
 
@@ -390,9 +389,8 @@ WHERE do.estado_orden = 'Entregado'
 GROUP BY c.nombre_categoria
 ORDER BY total_ordenes DESC;
 
--- -----------------------------------------------------
+
 -- PROCEDIMIENTOS ALMACENADOS (DROP IF EXISTS -> CREATE)
--- -----------------------------------------------------
 
 -- 1) CLIENTE
 DELIMITER //
@@ -882,3 +880,388 @@ BEGIN
 END //
 DELIMITER ;
 SELECT buscar_cliente(1);
+
+-- TRIGGERS
+
+DELIMITER //
+CREATE TRIGGER eliminar_cliente_relacionados 
+BEFORE DELETE ON Cliente
+FOR EACH ROW
+BEGIN
+    -- 1. Eliminar los detalles de las órdenes del cliente
+    DELETE DO
+    FROM Detalle_Orden DO
+    INNER JOIN Orden O ON DO.idOrden = O.idOrden
+    INNER JOIN Venta V ON O.id_venta = V.id_venta
+    WHERE V.idCliente = OLD.idCliente;
+    -- 2. Eliminar las órdenes del cliente
+    DELETE O
+    FROM Orden O
+    INNER JOIN Venta V ON O.id_venta = V.id_venta
+    WHERE V.idCliente = OLD.idCliente;
+    -- 3. Eliminar las ventas del cliente
+    DELETE FROM Venta
+    WHERE idCliente = OLD.idCliente;
+END; //
+DELIMITER ;
+SELECT * FROM Cliente WHERE idCliente = 2;
+SELECT * FROM Detalle_Orden ;
+SELECT * FROM Orden ;
+SELECT * FROM Venta WHERE idCliente = 2;
+DELETE FROM Cliente WHERE idCliente = 2;
+
+
+DELIMITER //
+CREATE TRIGGER eliminar_producto_variantes 
+BEFORE DELETE ON Producto
+FOR EACH ROW
+BEGIN
+    -- 1. Eliminar registros en Detalle_Orden relacionados con el producto
+    DELETE FROM Detalle_Orden
+    WHERE id_producto = OLD.id_producto;
+    -- 2. Eliminar registros en Detalle_Insumo relacionados con el producto
+    DELETE FROM Detalle_Insumo
+    WHERE id_producto = OLD.id_producto;
+END;
+//
+DELIMITER ;
+SELECT * FROM Producto WHERE id_producto = 1;
+SELECT * FROM Detalle_Orden WHERE id_producto = 1;
+SELECT * FROM Detalle_Insumo WHERE id_producto = 1;
+DELETE FROM Producto WHERE id_producto = 1;
+
+
+SET GLOBAL event_scheduler = ON; #para activar los eventos en MySQL
+SHOW EVENTS; #mostrar todos los eventos creados en MySQL
+
+
+DELIMITER $$
+CREATE EVENT anular_ventas_pendientes
+ON SCHEDULE EVERY 1 DAY
+STARTS TIMESTAMP (CURRENT_DATE, '24:00:00')
+DO
+BEGIN 
+    UPDATE Venta
+    SET estado_venta = 'Anulada'
+    WHERE estado_venta = 'Pendiente'
+      AND fecha_venta < NOW() - INTERVAL 2 DAY; 
+      -- now() obtiene la fecha y hora actual de la venta 
+      -- Interval 2 day es la condicion de que si lleva mas de 2 días pase a anulada
+END$$
+DELIMITER ;
+
+SHOW CREATE EVENT anular_ventas_pendientes; -- Muestra el evento mas detallado 
+ALTER EVENT anular_ventas_pendientes DISABLE; -- DESHABILITA EL EVENTO
+ALTER EVENT anular_ventas_pendientes ENABLE; -- HABILITA EL EVENTO 
+
+
+CREATE TABLE IF NOT EXISTS bitacora_general (
+    id_bitacora INT AUTO_INCREMENT PRIMARY KEY,
+    tabla_afectada VARCHAR(50) NOT NULL,
+    tipo_cambio VARCHAR(20) NOT NULL,
+    usuario VARCHAR(100) NOT NULL,
+    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
+SELECT * FROM bitacora_general;
+
+INSERT INTO Cliente (nombre_1, apellido_1, direccion_cliente, telefono_cliente) VALUES
+('Anner', 'Monge', 'Calle 21', '55555555');
+
+INSERT INTO Producto (id_categoria, nombre_producto, precio_costo, precio_venta, existencia) VALUES
+(2, 'Hamburguesass Clásica', 2.50, 5.00, 3);
+
+UPDATE producto SET 
+id_categoria = '2',
+nombre_producto = 'Hamburguesas',
+precio_costo = '2.90',
+precio_venta = '7.00',
+existencia = '5'
+WHERE id_producto = 22;
+
+DELETE FROM producto WHERE id_producto = 22;
+
+-- ---------------------------------------
+-- Trigers Producto
+-- ---------------------------------------
+DELIMITER $$
+CREATE TRIGGER trg_producto_insert
+AFTER INSERT ON producto
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('producto', 'INSERT', USER());
+END$$
+
+
+DELIMITER $$
+CREATE TRIGGER trg_producto_update
+AFTER UPDATE ON producto
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('producto', 'UPDATE', USER());
+END$$
+
+
+DELIMITER $$
+CREATE TRIGGER trg_producto_delete
+AFTER DELETE ON producto
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('producto', 'DELETE', USER());
+END$$
+
+
+SELECT * FROM bitacora_general;
+
+DELIMITER ;
+
+-- =====================================
+-- Triggers para tabla Orden
+-- =====================================
+DELIMITER $$
+
+CREATE TRIGGER trg_orden_insert
+AFTER INSERT ON orden
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('orden', 'INSERT', USER());
+END$$
+
+DELIMITER $$
+CREATE TRIGGER trg_orden_update
+AFTER UPDATE ON orden
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('orden', 'UPDATE', USER());
+END$$
+
+DELIMITER $$
+CREATE TRIGGER trg_orden_delete
+AFTER DELETE ON orden
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('orden', 'DELETE', USER());
+END$$
+DELIMITER ;
+
+
+
+-- =====================================
+-- Triggers para tabla Detalle_Orden
+-- =====================================
+DELIMITER $$
+
+CREATE TRIGGER trg_Detalle_Orden_insert
+AFTER INSERT ON orden
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Detalle_Orden', 'INSERT', USER());
+END$$
+
+DELIMITER $$
+CREATE TRIGGER trg_Detalle_Orden_update
+AFTER UPDATE ON Detalle_Orden
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Detalle_Orden', 'UPDATE', USER());
+END$$
+
+DELIMITER $$
+CREATE TRIGGER trg_Detalle_Orden_delete
+AFTER DELETE ON Detalle_Orden
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Detalle_Orden', 'DELETE', USER());
+END$$
+DELIMITER ;	
+-- -----------------------------------------------
+-- trigers de Insumo
+-- -----------------------------------------------
+DELIMITER $$
+CREATE TRIGGER trg_insumo_insert
+AFTER INSERT ON insumo
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('insumo', 'INSERT', USER());
+END$$
+INSERT INTO Insumo (fecha_insumo, total_insumo) VALUES
+('2025-09-22 12:00:00', 0.70);
+
+DELIMITER $$
+CREATE TRIGGER trg_insumo_update
+AFTER UPDATE ON insumo
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('insumo', 'UPDATE', USER());
+END$$
+UPDATE insumo SET 
+fecha_insumo = '2025-10-22 08:00:00',
+total_insumo ='2.30'
+WHERE id_insumo = 21;
+
+SELECT * FROM INSUMO;
+
+DELIMITER $$
+CREATE TRIGGER trg_insumo_delete
+AFTER DELETE ON insumo
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('insumo', 'DELETE', USER());
+END$$
+
+DELETE FROM Insumo WHERE id_insumo = 21;
+
+-- ---------------------------------------------------
+-- Trigers del Detalle_Insumo
+-- ---------------------------------------------------
+DELIMITER $$
+CREATE TRIGGER trg_detalle_insumo_insert
+AFTER INSERT ON detalle_insumo
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('detalle_insumo', 'INSERT', USER());
+END$$
+INSERT INTO Detalle_Insumo (id_insumo, id_producto, nombre_insumo, cantidad_insumo, precio_insumo) VALUES
+(2, 2, 'Pan trucha', 10.8, 1.20);
+
+select * from bitacora_general;
+
+DELIMITER $$
+CREATE TRIGGER trg_detalle_insumo_update
+AFTER UPDATE ON detalle_insumo
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('detalle_insumo', 'UPDATE', USER());
+END$$
+UPDATE detalle_insumo SET 
+id_insumo = '3', 
+id_producto = '3',
+ nombre_insumo = 'pan regular', 
+ cantidad_insumo = '11.8',
+ precio_insumo = '1.30'
+ WHERE id_detalle_insumo = 21;
+
+
+DELIMITER $$
+CREATE TRIGGER trg_detalle_insumo_delete
+AFTER DELETE ON detalle_insumo
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('detalle_insumo', 'DELETE', USER());
+END$$
+DELETE FROM detalle_insumo WHERE id_detalle_insumo = 21;
+
+DELIMITER $$
+CREATE TRIGGER trg_usuario_insert
+AFTER INSERT ON usuario
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('usuario', 'INSERT', USER());
+END$$
+
+DELIMITER $$
+CREATE TRIGGER trg_usuario_update
+AFTER UPDATE ON usuario
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('usuario', 'UPDATE', USER());
+END$$
+
+DELIMITER $$
+CREATE TRIGGER trg_usuario_delete
+AFTER DELETE ON usuario
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('usuario', 'DELETE', USER());
+END$$
+
+DELIMITER $$
+CREATE TRIGGER trg_venta_insert
+AFTER INSERT ON venta
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('venta', 'INSERT', USER());
+END$$
+
+DELIMITER $$
+CREATE TRIGGER trg_venta_update
+AFTER UPDATE ON venta
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('venta', 'UPDATE', USER());
+END$$
+
+DELIMITER $$
+CREATE TRIGGER trg_venta_delete
+AFTER DELETE ON venta
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('venta', 'DELETE', USER());
+END$$
+DELIMITER ;
+
+
+-- Triggers para tabla CLIENTE
+DELIMITER $$
+
+CREATE TRIGGER trg_cliente_insert
+AFTER INSERT ON cliente
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('cliente', 'INSERT', USER());
+END$$
+
+CREATE TRIGGER trg_cliente_update
+AFTER UPDATE ON cliente
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('cliente', 'UPDATE', USER());
+END$$
+
+CREATE TRIGGER trg_cliente_delete
+AFTER DELETE ON cliente
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('cliente', 'DELETE', USER());
+END$$  
+  
+  
+  -- crear usuarios de MySQL
+-- Permisos basicos 
+CREATE USER IF NOT EXISTS 'administrador'@'localhost'IDENTIFIED BY 'admin123';
+-- permisos de administracion 
+CREATE USER IF NOT EXISTS 'cliente'@'localhost'IDENTIFIED BY 'cliente123';
+
+-- ASIGNAR PERMISOS 
+GRANT ALL PRIVILEGES ON SistemaTotto.* TO 'administrador'@'localhost';
+GRANT SELECT ON SistemaTotto.* TO 'cliente'@'localhost';
+FLUSH PRIVILEGES;
+
+-- Verificar los privilegios
+SHOW GRANTS FOR 'cliente'@'localhost';
+SHOW GRANTS FOR 'administrador'@'localhost';

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 
-import {obtenerDetallesOrdenes,obtenerDetalleOrden, registrarDetalleOrden, eliminarDetalleOrden} from '../controllers/detalles_orden.controller.js';
+import {obtenerDetallesOrdenes,obtenerDetalleOrden, registrarDetalleOrden, eliminarDetalleOrden, actualizarDetalleOrden} from '../controllers/detalles_orden.controller.js';
 
 const router = Router();
 
@@ -16,4 +16,8 @@ router.post('/registrarDetalleOrden', registrarDetalleOrden);
 
 // Ruta para eliminar un detalle orden 
 router.delete('/eliminarDetalleOrden/:id_detalle_orden', eliminarDetalleOrden);
+
+// Ruta para actualizar un detalle orden 
+router.patch('/actualizarDetalleOrden/:id_detalle_orden', actualizarDetalleOrden);
+
 export default router;
