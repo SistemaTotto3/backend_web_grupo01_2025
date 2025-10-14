@@ -5,7 +5,7 @@ CREATE TABLE Usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nombre_usuario VARCHAR(50) UNIQUE,
     contraseña_hash VARCHAR(20),
-    rol ENUM('Administrador','Vendedor') NOT NULL
+    rol ENUM('Administrador','Vendedor', 'editor') NOT NULL
 );
 
 CREATE TABLE Insumo (
@@ -99,8 +99,39 @@ ALTER TABLE Producto
     FOREIGN KEY (id_categoria) REFERENCES Categoria (id_categoria);
 
 INSERT INTO Usuario (nombre_usuario, contraseña_hash, rol) VALUES
-('admin1', 'admin23', 'Administrador'),
-('vendedor1', 'vend23', 'Vendedor');
+('Jose', 'Jose123', 'Administrador'),
+('Carlos', 'Carlos123', 'Vendedor'),
+('Hassel', 'hassel23', 'Editor');
+-- Create roles 
+CREATE ROLE 'Administrador';
+CREATE ROLE 'Vendedor';
+CREATE ROLE 'Editor';
+
+
+-- Create users 
+CREATE USER 'Jose'@'localhost' IDENTIFIED BY 'Jose123';
+CREATE USER 'Carlos'@'localhost' IDENTIFIED BY 'Carlos123';
+CREATE USER 'Hassel'@'localhost' IDENTIFIED BY 'hassel23';
+
+
+GRANT ALL PRIVILEGES ON sistematotto.* TO 'Administrador';
+GRANT SELECT, INSERT, UPDATE ON  sistematotto.* TO 'Vendedor';
+GRANT SELECT, UPDATE ON sistematotto.* TO 'Editor'; 
+
+-- Grant roles  usuarios
+GRANT 'Administrador' TO 'Jose'@'localhost';
+GRANT 'Vendedor' TO 'Carlos'@'localhost';
+GRANT 'Editor' TO 'Hassel'@'localhost';
+
+
+SET DEFAULT ROLE 'Administrador' TO 'Jose'@'localhost';
+SET DEFAULT ROLE 'Vendedor' TO 'Carlos'@'localhost';
+SET DEFAULT ROLE 'Editor' TO 'Hassel'@'localhost';
+
+SHOW GRANTS ;
+SHOW GRANTS FOR 'Jose'@'localhost';
+SHOW GRANTS FOR 'Carlos'@'localhost';
+SHOW GRANTS FOR 'Hassel'@'localhost';
 
 
 INSERT INTO Insumo (fecha_insumo, total_insumo) VALUES
@@ -993,6 +1024,7 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('producto', 'INSERT', USER());
 END$$
+DELIMITER $$
 INSERT INTO Producto (id_categoria, nombre_producto, precio_costo, precio_venta, existencia) VALUES
 (2, 'Hamburguesass Clásica', 2.50, 5.00, 3);
 
@@ -1006,6 +1038,8 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('producto', 'UPDATE', USER());
 END$$
+DELIMITER $$
+
 UPDATE producto SET 
 id_categoria = '2',
 nombre_producto = 'Hamburguesas',
@@ -1024,14 +1058,13 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('producto', 'DELETE', USER());
 END$$
-DELIMITER ;
+DELIMITER $$
 DELETE FROM producto WHERE id_producto = 22;
 
 -- =====================================
 -- Triggers para tabla Orden
 -- =====================================
 DELIMITER $$
-
 CREATE TRIGGER trg_orden_insert
 AFTER INSERT ON orden
 FOR EACH ROW
@@ -1039,6 +1072,7 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('orden', 'INSERT', USER());
 END$$
+DELIMITER $$
 
 DELIMITER $$
 CREATE TRIGGER trg_orden_update
@@ -1048,6 +1082,7 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('orden', 'UPDATE', USER());
 END$$
+DELIMITER $$
 
 DELIMITER $$
 CREATE TRIGGER trg_orden_delete
@@ -1057,7 +1092,7 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('orden', 'DELETE', USER());
 END$$
-DELIMITER ;
+DELIMITER $$
 
 
 
@@ -1065,7 +1100,6 @@ DELIMITER ;
 -- Triggers para tabla Detalle_Orden
 -- =====================================
 DELIMITER $$
-
 CREATE TRIGGER trg_Detalle_Orden_insert
 AFTER INSERT ON orden
 FOR EACH ROW
@@ -1073,6 +1107,8 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('Detalle_Orden', 'INSERT', USER());
 END$$
+DELIMITER $$
+
 
 DELIMITER $$
 CREATE TRIGGER trg_Detalle_Orden_update
@@ -1082,6 +1118,8 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('Detalle_Orden', 'UPDATE', USER());
 END$$
+DELIMITER $$
+
 
 DELIMITER $$
 CREATE TRIGGER trg_Detalle_Orden_delete
@@ -1091,7 +1129,7 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('Detalle_Orden', 'DELETE', USER());
 END$$
-DELIMITER ;	
+DELIMITER $$
 -- -----------------------------------------------
 -- trigers de Insumo
 -- -----------------------------------------------
@@ -1103,6 +1141,8 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('insumo', 'INSERT', USER());
 END$$
+DELIMITER $$
+
 INSERT INTO Insumo (fecha_insumo, total_insumo) VALUES
 ('2025-09-22 12:00:00', 0.70);
 
@@ -1114,6 +1154,8 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('insumo', 'UPDATE', USER());
 END$$
+DELIMITER $$
+
 UPDATE insumo SET 
 fecha_insumo = '2025-10-22 08:00:00',
 total_insumo ='2.30'
@@ -1129,6 +1171,7 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('insumo', 'DELETE', USER());
 END$$
+DELIMITER $$
 
 DELETE FROM Insumo WHERE id_insumo = 21;
 
@@ -1143,6 +1186,8 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('detalle_insumo', 'INSERT', USER());
 END$$
+DELIMITER $$
+
 INSERT INTO Detalle_Insumo (id_insumo, id_producto, nombre_insumo, cantidad_insumo, precio_insumo) VALUES
 (2, 2, 'Pan trucha', 10.8, 1.20);
 
@@ -1156,6 +1201,8 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('detalle_insumo', 'UPDATE', USER());
 END$$
+DELIMITER $$
+
 UPDATE detalle_insumo SET 
 id_insumo = '3', 
 id_producto = '3',
@@ -1173,6 +1220,8 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('detalle_insumo', 'DELETE', USER());
 END$$
+DELIMITER $$
+
 DELETE FROM detalle_insumo WHERE id_detalle_insumo = 21;
 
 DELIMITER $$
@@ -1183,6 +1232,7 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('usuario', 'INSERT', USER());
 END$$
+DELIMITER $$
 
 DELIMITER $$
 CREATE TRIGGER trg_usuario_update
@@ -1192,6 +1242,7 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('usuario', 'UPDATE', USER());
 END$$
+DELIMITER $$
 
 DELIMITER $$
 CREATE TRIGGER trg_usuario_delete
@@ -1201,6 +1252,7 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('usuario', 'DELETE', USER());
 END$$
+DELIMITER $$
 
 DELIMITER $$
 CREATE TRIGGER trg_venta_insert
@@ -1210,6 +1262,7 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('venta', 'INSERT', USER());
 END$$
+DELIMITER $$
 
 DELIMITER $$
 CREATE TRIGGER trg_venta_update
@@ -1219,6 +1272,7 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('venta', 'UPDATE', USER());
 END$$
+DELIMITER $$
 
 DELIMITER $$
 CREATE TRIGGER trg_venta_delete
@@ -1228,12 +1282,11 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('venta', 'DELETE', USER());
 END$$
-DELIMITER ;
+DELIMITER $$
 
 
 -- Triggers para tabla CLIENTE
 DELIMITER $$
-
 CREATE TRIGGER trg_cliente_insert
 AFTER INSERT ON cliente
 FOR EACH ROW
@@ -1241,7 +1294,9 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('cliente', 'INSERT', USER());
 END$$
+DELIMITER $$
 
+DELIMITER $$
 CREATE TRIGGER trg_cliente_update
 AFTER UPDATE ON cliente
 FOR EACH ROW
@@ -1249,7 +1304,10 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('cliente', 'UPDATE', USER());
 END$$
+DELIMITER $$
 
+
+DELIMITER $$
 CREATE TRIGGER trg_cliente_delete
 AFTER DELETE ON cliente
 FOR EACH ROW
@@ -1257,19 +1315,8 @@ BEGIN
     INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
     VALUES ('cliente', 'DELETE', USER());
 END$$  
+DELIMITER $$
+
+
   
   
-  -- crear usuarios de MySQL
--- Permisos basicos 
-CREATE USER IF NOT EXISTS 'administrador'@'localhost'IDENTIFIED BY 'admin123';
--- permisos de administracion 
-CREATE USER IF NOT EXISTS 'cliente'@'localhost'IDENTIFIED BY 'cliente123';
-
--- ASIGNAR PERMISOS 
-GRANT ALL PRIVILEGES ON SistemaTotto.* TO 'administrador'@'localhost';
-GRANT SELECT ON SistemaTotto.* TO 'cliente'@'localhost';
-FLUSH PRIVILEGES;
-
--- Verificar los privilegios
-SHOW GRANTS FOR 'cliente'@'localhost';
-SHOW GRANTS FOR 'administrador'@'localhost';
