@@ -1,150 +1,105 @@
 CREATE DATABASE SistemaTotto;
 USE SistemaTotto;
 
+-- USUARIOS
 CREATE TABLE Usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nombre_usuario VARCHAR(50) UNIQUE,
-    contraseña_hash VARCHAR(20),
-    rol ENUM('Administrador','Vendedor', 'editor') NOT NULL
+    contraseña_hash VARCHAR(100),
+    rol ENUM('Administrador', 'Vendedor') NOT NULL
 );
 
-CREATE TABLE Insumo (
-id_insumo INT AUTO_INCREMENT PRIMARY KEY,
-fecha_insumo DATETIME,
-total_insumo FLOAT
-);
-
-
-CREATE TABLE Detalle_Insumo (
-id_detalle_insumo INT AUTO_INCREMENT PRIMARY KEY,
-id_insumo INT,
-id_producto INT,
-nombre_insumo VARCHAR(100),
-cantidad_insumo float, 
-precio_insumo Float
-);
-
+-- CLIENTES
 CREATE TABLE Cliente (
-idCliente INT AUTO_INCREMENT PRIMARY KEY,
-nombre_1 VARCHAR(50),
-apellido_1 VARCHAR(50),
-direccion_cliente VARCHAR(75),
-telefono_cliente VARCHAR(15)
+    idCliente INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_1 VARCHAR(50),
+    apellido_1 VARCHAR(50),
+    direccion_cliente VARCHAR(75),
+    telefono_cliente VARCHAR(15)
 );
 
+-- CATEGORÍAS
 CREATE TABLE Categoria (
-id_categoria INT AUTO_INCREMENT PRIMARY KEY,
-nombre_categoria VARCHAR(50)
+    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_categoria VARCHAR(50)
 );
 
+-- PRODUCTOS
 CREATE TABLE Producto (
-id_producto INT AUTO_INCREMENT PRIMARY KEY,
-id_categoria INT,
-nombre_producto VARCHAR(50),
-precio_costo FLOAT,
-precio_venta FLOAT,
-existencia INT
+    id_producto INT AUTO_INCREMENT PRIMARY KEY,
+    id_categoria INT,
+    nombre_producto VARCHAR(50),
+    precio_costo FLOAT,
+    precio_venta FLOAT,
+    existencia INT,
+    CONSTRAINT FK_producto_categoria
+        FOREIGN KEY (id_categoria) REFERENCES Categoria (id_categoria)
 );
 
-
-CREATE TABLE Orden (
-idOrden INT AUTO_INCREMENT PRIMARY KEY,
-id_venta INT,
-fecha_orden DATETIME
+-- INSUMOS
+CREATE TABLE Insumo (
+    id_insumo INT AUTO_INCREMENT PRIMARY KEY,
+    fecha_insumo DATETIME,
+    total_insumo FLOAT
 );
 
-CREATE TABLE Detalle_Orden (
-id_detalle_orden INT AUTO_INCREMENT PRIMARY KEY,
-idOrden INT,
-id_producto INT,
-estado_orden VARCHAR(50),
-cantidad INT
+-- DETALLE DE INSUMOS
+CREATE TABLE Detalle_Insumo (
+    id_detalle_insumo INT AUTO_INCREMENT PRIMARY KEY,
+    id_insumo INT,
+    id_producto INT,
+    nombre_insumo VARCHAR(100),
+    cantidad_insumo FLOAT,
+    precio_insumo FLOAT,
+    CONSTRAINT FK_detalle_insumo_Insumo
+        FOREIGN KEY (id_insumo) REFERENCES Insumo (id_insumo) ON DELETE CASCADE,
+    CONSTRAINT FK_detalle_insumo_Producto
+        FOREIGN KEY (id_producto) REFERENCES Producto (id_producto)
 );
 
+-- VENTAS
 CREATE TABLE Venta (
-id_venta INT AUTO_INCREMENT PRIMARY KEY,
-idCliente INT,
-fecha_venta DATETIME,
-total_venta FLOAT,
-estado_venta ENUM('Pendiente','Pagado','Cancelado') NOT NULL
+    id_venta INT AUTO_INCREMENT PRIMARY KEY,
+    idCliente INT,
+    fecha_venta DATETIME,
+    total_venta FLOAT,
+    estado_venta ENUM('Pendiente', 'Pagado', 'Cancelado') NOT NULL,
+    CONSTRAINT FK_venta_Cliente
+        FOREIGN KEY (idCliente) REFERENCES Cliente (idCliente)
 );
 
--- Relaciones (solo ON DELETE CASCADE en los detalles)
-ALTER TABLE Detalle_Insumo 
-    ADD CONSTRAINT FK_detalle_insumo_Insumo 
-    FOREIGN KEY (id_insumo) REFERENCES Insumo (id_insumo) ON DELETE CASCADE;
+-- ÓRDENES
+CREATE TABLE Orden (
+    idOrden INT AUTO_INCREMENT PRIMARY KEY,
+    id_venta INT,
+    fecha_orden DATETIME,
+    CONSTRAINT FK_orden_venta
+        FOREIGN KEY (id_venta) REFERENCES Venta (id_venta)
+);
 
-ALTER TABLE Detalle_Insumo 
-    ADD CONSTRAINT FK_detalle_insumo_Producto 
-    FOREIGN KEY (id_producto) REFERENCES Producto (id_producto);
+-- DETALLE DE ÓRDENES
+CREATE TABLE Detalle_Orden (
+    id_detalle_orden INT AUTO_INCREMENT PRIMARY KEY,
+    idOrden INT,
+    id_producto INT,
+    estado_orden VARCHAR(50),
+    cantidad INT,
+    CONSTRAINT FK_detalle_orden_Orden
+        FOREIGN KEY (idOrden) REFERENCES Orden (idOrden) ON DELETE CASCADE,
+    CONSTRAINT FK_detalle_orden_Producto
+        FOREIGN KEY (id_producto) REFERENCES Producto (id_producto)
+);
 
-ALTER TABLE Detalle_Orden 
-    ADD CONSTRAINT FK_detalle_orden_Producto 
-    FOREIGN KEY (id_producto) REFERENCES Producto (id_producto);
+-- ============================================
+-- INSERCIÓN DE DATOS
+-- ============================================
 
-ALTER TABLE Detalle_Orden 
-    ADD CONSTRAINT FK_detalle_orden_Orden 
-    FOREIGN KEY (idOrden) REFERENCES Orden (idOrden) ON DELETE CASCADE;
-
-ALTER TABLE Venta 
-    ADD CONSTRAINT FK_venta_Cliente 
-    FOREIGN KEY (idCliente) REFERENCES Cliente (idCliente);
-
-ALTER TABLE Orden 
-    ADD CONSTRAINT FK_orden_venta  
-    FOREIGN KEY (id_venta) REFERENCES Venta (id_venta);
-
-ALTER TABLE Producto 
-    ADD CONSTRAINT FK_producto_categoria 
-    FOREIGN KEY (id_categoria) REFERENCES Categoria (id_categoria);
-
+-- USUARIOS
 INSERT INTO Usuario (nombre_usuario, contraseña_hash, rol) VALUES
-('Jose', 'Jose123', 'Administrador'),
-('Carlos', 'Carlos123', 'Vendedor'),
-('Hassel', 'hassel23', 'Editor');
--- Create roles 
-CREATE ROLE 'Administrador';
-CREATE ROLE 'Vendedor';
-CREATE ROLE 'Editor';
+('admin1', 'admin23', 'Administrador'),
+('vendedor1', 'vend23', 'Vendedor');
 
-
--- Create users 
-CREATE USER 'Jose'@'localhost' IDENTIFIED BY 'Jose123';
-CREATE USER 'Carlos'@'localhost' IDENTIFIED BY 'Carlos123';
-CREATE USER 'Hassel'@'localhost' IDENTIFIED BY 'hassel23';
-
-
-GRANT ALL PRIVILEGES ON sistematotto.* TO 'Administrador';
-GRANT SELECT, INSERT, UPDATE ON  sistematotto.* TO 'Vendedor';
-GRANT SELECT, UPDATE ON sistematotto.* TO 'Editor'; 
-
--- Grant roles  usuarios
-GRANT 'Administrador' TO 'Jose'@'localhost';
-GRANT 'Vendedor' TO 'Carlos'@'localhost';
-GRANT 'Editor' TO 'Hassel'@'localhost';
-
-
-SET DEFAULT ROLE 'Administrador' TO 'Jose'@'localhost';
-SET DEFAULT ROLE 'Vendedor' TO 'Carlos'@'localhost';
-SET DEFAULT ROLE 'Editor' TO 'Hassel'@'localhost';
-
-SHOW GRANTS ;
-SHOW GRANTS FOR 'Jose'@'localhost';
-SHOW GRANTS FOR 'Carlos'@'localhost';
-SHOW GRANTS FOR 'Hassel'@'localhost';
-
-
-INSERT INTO Insumo (fecha_insumo, total_insumo) VALUES
-('2025-04-01 12:00:00', 0.60), ('2025-04-05 12:10:00', 0.65), ('2025-04-10 12:20:00', 0.70),
-('2025-04-15 12:20:00', 1.50), ('2025-04-20 12:25:00', 1.30), ('2025-04-30 12:30:00', 1.70),
-('2025-04-08 12:00:00', 0.40), ('2025-04-12 12:10:00', 0.45), ('2025-04-14 12:00:00', 0.50),
-('2025-04-07 12:00:00', 0.25), ('2025-04-03 12:05:00', 0.20), ('2025-04-22 12:00:00', 0.30),
-('2025-04-11 12:00:00', 0.60), ('2025-04-16 12:00:00', 0.35), ('2025-04-17 12:00:00', 0.50),
-('2025-04-21 12:00:00', 0.10), ('2025-04-23 12:00:00', 0.10), ('2025-04-27 12:00:00', 0.10),
-('2025-04-26 12:00:00', 0.15), ('2025-04-13 12:00:00', 0.20);
-
-
-
+-- CLIENTES
 INSERT INTO Cliente (nombre_1, apellido_1, direccion_cliente, telefono_cliente) VALUES
 ('Juan', 'Gómez', 'Calle 1 #2-3', '3100000001'),
 ('María', 'Pérez', 'Calle 2 #3-4', '3100000002'),
@@ -167,15 +122,15 @@ INSERT INTO Cliente (nombre_1, apellido_1, direccion_cliente, telefono_cliente) 
 ('Lucía', 'Fajardo', 'Calle 19 #20-21', '3100000019'),
 ('Esteban', 'Reyes', 'Calle 20 #21-22', '3100000020');
 
-
+-- CATEGORÍAS
 INSERT INTO Categoria (nombre_categoria) VALUES
 ('Hamburguesas Clásicas'), ('Hamburguesas Especiales'), ('Vegetarianas'),
-('Bebidas'), ('Acompañamientos'), ('Postres'), ('Combos'), 
-('Picantes'),  ('Premium'), ('Baratas'), ('Doble carne'),
- ('Ensaladas'), ('Mexicanas'), ('Sin pan'), ('Fitness'), ('Gourmet'),
-('Mini'), ('Grandes'),  ('Económicas'),
- ('Veganas');
+('Bebidas'), ('Acompañamientos'), ('Postres'), ('Combos'),
+('Picantes'), ('Premium'), ('Baratas'), ('Doble carne'),
+('Ensaladas'), ('Mexicanas'), ('Sin pan'), ('Fitness'),
+('Gourmet'), ('Mini'), ('Grandes'), ('Económicas'), ('Veganas');
 
+-- PRODUCTOS
 INSERT INTO Producto (id_categoria, nombre_producto, precio_costo, precio_venta, existencia) VALUES
 (1, 'Hamburguesa Clásica', 2.50, 5.00, 3),
 (2, 'Hamburguesa BBQ', 3.00, 6.00, 5),
@@ -198,8 +153,40 @@ INSERT INTO Producto (id_categoria, nombre_producto, precio_costo, precio_venta,
 (19, 'Hamburguesa Italiana', 3.50, 7.00, 9),
 (20, 'Hamburguesa con Queso Azul', 3.20, 6.50, 5);
 
+-- INSUMOS
+INSERT INTO Insumo (fecha_insumo, total_insumo) VALUES
+('2025-04-01 12:00:00', 0.60), ('2025-04-05 12:10:00', 0.65), ('2025-04-10 12:20:00', 0.70),
+('2025-04-15 12:20:00', 1.50), ('2025-04-20 12:25:00', 1.30), ('2025-04-30 12:30:00', 1.70),
+('2025-04-08 12:00:00', 0.40), ('2025-04-12 12:10:00', 0.45), ('2025-04-14 12:00:00', 0.50),
+('2025-04-07 12:00:00', 0.25), ('2025-04-03 12:05:00', 0.20), ('2025-04-22 12:00:00', 0.30),
+('2025-04-11 12:00:00', 0.60), ('2025-04-16 12:00:00', 0.35), ('2025-04-17 12:00:00', 0.50),
+('2025-04-21 12:00:00', 0.10), ('2025-04-23 12:00:00', 0.10), ('2025-04-27 12:00:00', 0.10),
+('2025-04-26 12:00:00', 0.15), ('2025-04-13 12:00:00', 0.20);
 
+-- DETALLE DE INSUMOS
+INSERT INTO Detalle_Insumo (id_insumo, id_producto, nombre_insumo, cantidad_insumo, precio_insumo) VALUES
+(1, 1, 'Pan brioche', 10.5, 1.30),
+(2, 1, 'Pan integral', 10.8, 1.30),
+(3, 1, 'Pan con ajonjolí', 10.30, 1.30),
+(4, 1, 'Carne de res 150g', 5.8, 1.30),
+(5, 2, 'Carne de pollo 150g', 5.3, 1.30),
+(6, 2, 'Carne vegetariana', 5.50, 1.30),
+(7, 2, 'Queso cheddar', 8.50, 1.30),
+(8, 2, 'Queso mozzarella', 8.50, 1.30),
+(9, 3, 'Lechuga', 15.50, 1.30),
+(10, 3, 'Tomate', 10.50, 1.30),
+(11, 4, 'Cebolla caramelizada', 5.50, 1.30),
+(12, 4, 'Pepinillos', 5.50, 1.30),
+(13, 5, 'Huevo frito', 5.50, 1.30),
+(14, 6, 'Mayonesa', 10.50, 1.30),
+(15, 7, 'Kétchup', 10.50, 1.30),
+(16, 8, 'Mostaza', 10.50, 1.30),
+(17, 9, 'Salsa BBQ', 10.40, 1.30),
+(18, 10, 'Salsa picante', 10.30, 1.30),
+(19, 11, 'Aros de cebolla', 5.10, 1.30),
+(20, 11, 'Guacamole', 5.15, 1.30);
 
+-- VENTAS
 INSERT INTO Venta (idCliente, fecha_venta, total_venta, estado_venta) VALUES
 (1,'2025-01-01 11:10:00',200,'Cancelado'),
 (2,'2025-01-02 12:00:00',300,'Pagado'),
@@ -222,8 +209,7 @@ INSERT INTO Venta (idCliente, fecha_venta, total_venta, estado_venta) VALUES
 (19,'2025-01-19 13:15:00',150,'Pagado'),
 (20,'2025-01-20 17:50:00',500,'Pagado');
 
-
-
+-- ÓRDENES
 INSERT INTO Orden (id_venta, fecha_orden) VALUES
 (1,  '2025-01-01 10:45:00'),
 (2,  '2025-01-02 11:45:00'),
@@ -246,7 +232,7 @@ INSERT INTO Orden (id_venta, fecha_orden) VALUES
 (19, '2025-01-19 12:50:00'),
 (20, '2025-01-20 17:35:00');
 
-
+-- DETALLE DE ÓRDENES
 INSERT INTO Detalle_Orden (idOrden, id_producto, estado_orden, cantidad) VALUES
 (1, 1, 'Entregado', 2),
 (2, 2, 'Entregado', 1),
@@ -269,28 +255,6 @@ INSERT INTO Detalle_Orden (idOrden, id_producto, estado_orden, cantidad) VALUES
 (19, 19, 'Pendiente', 1),
 (20, 20, 'Entregado', 2);
 
-
-INSERT INTO Detalle_Insumo (id_insumo, id_producto, nombre_insumo, cantidad_insumo, precio_insumo) VALUES
-(1, 1, 'Pan brioche', 10.5, 1.30),
-(2, 1, 'Pan integral', 10.8, 1.30),
-(3, 1, 'Pan con ajonjolí', 10.30, 1.30),
-(4, 1, 'Carne de res 150g', 5.8, 1.30),
-(5, 2, 'Carne de pollo 150g', 5.3, 1.30),
-(6, 2, 'Carne vegetariana', 5.50, 1.30),
-(7, 2, 'Queso cheddar', 8.50, 1.30),
-(8, 2, 'Queso mozzarella', 8.50, 1.30),
-(9, 3, 'Lechuga', 15.50, 1.30),
-(10, 3, 'Tomate', 10.50, 1.30),
-(11, 4, 'Cebolla caramelizada', 5.50, 1.30),
-(12, 4, 'Pepinillos', 5.50, 1.30),
-(13, 5, 'Huevo frito', 5.50, 1.30),
-(14, 6, 'Mayonesa', 10.50, 1.30),
-(15, 7, 'Kétchup', 10.50, 1.30),
-(16, 8, 'Mostaza', 10.50, 1.30),
-(17, 9, 'Salsa BBQ', 10.40, 1.30),
-(18, 10, 'Salsa picante', 10.30, 1.30),
-(19, 11, 'Aros de cebolla', 5.10, 1.30),
-(20, 11, 'Guacamole', 5.15, 1.30);
 
 -- VISTAS (CREATE REPLACE)
 
