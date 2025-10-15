@@ -94,6 +94,37 @@ CREATE TABLE Detalle_Orden (
 -- INSERCIÓN DE DATOS
 -- ============================================
 
+-- Create roles 
+CREATE ROLE 'Administrador';
+CREATE ROLE 'Vendedor';
+CREATE ROLE 'Editor';
+
+
+-- Create users 
+CREATE USER 'Jose'@'localhost' IDENTIFIED BY 'Jose123';
+CREATE USER 'Carlos'@'localhost' IDENTIFIED BY 'Carlos123';
+CREATE USER 'Hassel'@'localhost' IDENTIFIED BY 'hassel23';
+
+
+GRANT ALL PRIVILEGES ON sistematotto.* TO 'Administrador';
+GRANT SELECT, INSERT, UPDATE ON  sistematotto.* TO 'Vendedor';
+GRANT SELECT, UPDATE ON sistematotto.* TO 'Editor'; 
+
+-- Grant roles  usuarios
+GRANT 'Administrador' TO 'Jose'@'localhost';
+GRANT 'Vendedor' TO 'Carlos'@'localhost';
+GRANT 'Editor' TO 'Hassel'@'localhost';
+
+
+SET DEFAULT ROLE 'Administrador' TO 'Jose'@'localhost';
+SET DEFAULT ROLE 'Vendedor' TO 'Carlos'@'localhost';
+SET DEFAULT ROLE 'Editor' TO 'Hassel'@'localhost';
+
+SHOW GRANTS ;
+SHOW GRANTS FOR 'Jose'@'localhost';
+SHOW GRANTS FOR 'Carlos'@'localhost';
+SHOW GRANTS FOR 'Hassel'@'localhost';
+
 -- USUARIOS
 INSERT INTO Usuario (nombre_usuario, contraseña_hash, rol) VALUES
 ('admin1', 'admin23', 'Administrador'),
