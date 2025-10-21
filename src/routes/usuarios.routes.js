@@ -5,7 +5,7 @@ import {obtenerUsuarios, obtenerUsuario, registrarUsuario, eliminarUsuario, actu
 const router = Router();
 
 // Obtener todas las categorías
-router.get('/usuario', obtenerUsuarios);
+router.get('/usuarios', obtenerUsuarios);
 
 //Ruta para obtener un usuario por su ID
 router.get('/usuario/:id_usuario', obtenerUsuario);
