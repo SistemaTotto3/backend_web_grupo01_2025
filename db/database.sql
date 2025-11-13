@@ -39,7 +39,7 @@ CREATE TABLE Producto (
 -- INSUMOS
 CREATE TABLE Insumo (
     id_insumo INT AUTO_INCREMENT PRIMARY KEY,
-    fecha_insumo DATETIME,
+    fecha_insumo DATE,
     total_insumo FLOAT
 );
 
@@ -61,7 +61,7 @@ CREATE TABLE Detalle_Insumo (
 CREATE TABLE Venta (
     id_venta INT AUTO_INCREMENT PRIMARY KEY,
     idCliente INT,
-    fecha_venta DATETIME,
+    fecha_venta DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     total_venta FLOAT,
     estado_venta ENUM('Pendiente', 'Pagado', 'Cancelado') NOT NULL,
     CONSTRAINT FK_venta_Cliente
@@ -72,7 +72,7 @@ CREATE TABLE Venta (
 CREATE TABLE Orden (
     idOrden INT AUTO_INCREMENT PRIMARY KEY,
     id_venta INT,
-    fecha_orden DATETIME,
+    fecha_orden DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT FK_orden_venta
         FOREIGN KEY (id_venta) REFERENCES Venta (id_venta)
 );
