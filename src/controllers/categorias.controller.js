@@ -52,15 +52,15 @@ export const registrarCategoria = async (req, res) => {
 // Eliminar un Categoria
 export const eliminarCategoria = async (req, res) => {
   try {
-    const idCategoria = req.params.idCategoria;
+    const id_categoria = req.params.id_categoria;
     const [result] = await pool.query(
-      'DELETE FROM Categoria WHERE idCategoria = ?',
-      [idCategoria]
+      'DELETE FROM Categoria WHERE id_categoria = ?',
+      [id_categoria]
     );
 
     if (result.affectedRows === 0) {
       return res.status(404).json({
-        mensaje: `Error al eliminar la Categoria. El ID ${idCategoria} no fue encontrado.`
+        mensaje: `Error al eliminar la Categoria. El ID ${id_categoria} no fue encontrado.`
       });
     }
 
@@ -77,22 +77,22 @@ export const eliminarCategoria = async (req, res) => {
 // Actualizar un Categoria
 export const actualizarCategoria = async (req, res) => {
   try {
-    const { idCategoria } = req.params;
+    const { id_categoria } = req.params;
     const datos = req.body;
 
     const [result] = await pool.query(
-      "UPDATE Categoria SET ? WHERE idCategoria = ?",
-      [datos, idCategoria]
+      "UPDATE Categoria SET ? WHERE id_categoria = ?",
+      [datos, id_categoria]
     );
 
     if (result.affectedRows === 0) {
       return res.status(404).json({
-        mensaje: `categoria con ID ${idCategoria} no encontrada.`,
+        mensaje: `categoria con ID ${id_categoria} no encontrada.`,
       });
     }
 
     res.status(200).json({
-      mensaje: `categoria con ID ${idCategoria} actualizada.`,
+      mensaje: `categoria con ID ${id_categoria} actualizada.`,
     });
   } catch (error) {
     res.status(500).json({

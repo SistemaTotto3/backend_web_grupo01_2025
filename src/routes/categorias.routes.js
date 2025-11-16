@@ -14,9 +14,9 @@ router.get('/Categoria/:id_categoria', obtenerCategoria);
 router.post('/resgistrarcategoria', registrarCategoria);
 
 // Ruta para eliminar una Categoria
-router.delete('/eliminarCategoria/:idCategoria', eliminarCategoria);
+router.delete('/eliminarCategoria/:id_categoria', eliminarCategoria);
 
 // Ruta para actualizar una Categoria
-router.patch('/actualizarCategoria/:idCategoria', actualizarCategoria);
+router.patch('/actualizarCategoria/:id_categoria', actualizarCategoria);
 
 export default router;
