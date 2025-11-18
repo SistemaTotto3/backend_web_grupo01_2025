@@ -5,7 +5,7 @@ import {obtenerVentas, obtenerVenta, registrarVenta, eliminarVenta, actualizarVe
 const router = Router();
 
 // Obtener todas las ventas
-router.get('/venta', obtenerVentas);
+router.get('/ventas', obtenerVentas);
 
 //Ruta para obtener una venta por su ID
 router.get('/venta/:id_venta', obtenerVenta);

@@ -1,6 +1,6 @@
 import { pool } from "../../db_connection.js";
 // Obtener todas los clientes
-export const obtenerCliente = async (req, res) => {
+export const obtenerClientes = async (req, res) => {
   try {
     const [result] = await pool.query("SELECT * FROM Cliente");
     res.json(result);
@@ -13,7 +13,7 @@ export const obtenerCliente = async (req, res) => {
 };
 
 // Obtener una cliente por su ID
-export const obtenerClientes = async (req, res) => {
+export const obtenerCliente = async (req, res) => {
   try {
     const idCliente = req.params.idCliente;
     const [result] = await pool.query("SELECT * FROM Cliente WHERE idCliente= ?",[idCliente]
