@@ -14,23 +14,25 @@ export const obtenerDetallesOrdenes = async (req, res) => {
 
 
 // Obtener una orden por su ID
-export const obtenerDetalleOrden = async (req, res) => {
+export const obtenerDetallesPorOrden = async (req, res) => {
   try {
-    const id_detalle_orden = req.params.id_detalle_orden;
-    const [result] = await pool.query("SELECT * FROM Orden WHERE id_detalle_orden= ?",[id_detalle_orden]
+    const { idOrden } = req.params;
+
+    const [result] = await pool.query(
+      "SELECT * FROM Detalle_Orden WHERE idOrden = ?",
+      [idOrden]
     );
-    if (result.length <= 0) {
-      return res.status(404).json({
-        mensaje: `Error al leer los datos. ID ${id_detalle_orden} no encontrado.`,
-      });
-    }
-    res.json(result[0]);
+
+    res.json(result);
+
   } catch (error) {
     return res.status(500).json({
-      mensaje: "Ha ocurrido un error al leer los datos de Detalle Orden.",
+      mensaje: "Error al obtener los detalles de la orden.",
+      error,
     });
   }
 };
+
 
 //Crear una nuevo Detalle Orden 
 export const registrarDetalleOrden = async (req, res) => {
