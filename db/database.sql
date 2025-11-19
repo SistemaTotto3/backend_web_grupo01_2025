@@ -32,6 +32,7 @@ CREATE TABLE Producto (
     precio_costo FLOAT,
     precio_venta FLOAT,
     existencia INT,
+    imagen LONGTEXT,
     CONSTRAINT FK_producto_categoria
         FOREIGN KEY (id_categoria) REFERENCES Categoria (id_categoria)
 );

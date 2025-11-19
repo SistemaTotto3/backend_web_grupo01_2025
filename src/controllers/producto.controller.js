@@ -34,10 +34,10 @@ export const obtenerProducto = async (req, res) => {
 // Registrar un nuevo Producto
 export const registrarProducto = async (req, res) => {
   try {
-    const { id_categoria, nombre_producto,precio_costo,precio_venta,existencia } = req.body;
+    const { id_categoria, nombre_producto,precio_costo,precio_venta,existencia, imagen } = req.body;
     const [result] = await pool.query(
-      "INSERT INTO producto (id_categoria, nombre_producto,precio_costo,precio_venta,existencia) VALUES (?,?,?,?,?)",
-      [ id_categoria, nombre_producto,precio_costo,precio_venta,existencia]
+      "INSERT INTO producto (id_categoria, nombre_producto,precio_costo,precio_venta,existencia, imagen) VALUES (?,?,?,?,?,?)",
+      [ id_categoria, nombre_producto,precio_costo,precio_venta,existencia, imagen]
     );
     res.status(201).json({ id_producto: result.insertId });
   } catch (error) {
